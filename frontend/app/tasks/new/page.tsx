@@ -35,7 +35,7 @@ export default function NewTaskPage() {
 
   const fetchCategories = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:8000/api/categories', {
+              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function NewTaskPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/tasks', {
+              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

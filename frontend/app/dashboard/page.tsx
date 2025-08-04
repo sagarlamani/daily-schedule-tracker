@@ -46,10 +46,10 @@ export default function DashboardPage() {
         'Content-Type': 'application/json',
       }
 
-      const [tasksResponse, streaksResponse] = await Promise.all([
-        fetch('http://localhost:8000/api/tasks', { headers }),
-        fetch('http://localhost:8000/api/streaks', { headers })
-      ])
+              const [tasksResponse, streaksResponse] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks`, { headers }),
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/streaks`, { headers })
+        ])
 
       if (tasksResponse.ok) {
         const tasksData = await tasksResponse.json()
@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
     try {
       const endpoint = isCompleted ? 'uncomplete' : 'complete'
-      const response = await fetch(`http://localhost:8000/api/tasks/${taskId}/${endpoint}`, {
+              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -108,7 +108,7 @@ export default function DashboardPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
