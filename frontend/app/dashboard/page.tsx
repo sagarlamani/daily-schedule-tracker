@@ -211,27 +211,27 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 space-y-4 sm:space-y-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <button
                 onClick={() => {
                   const token = localStorage.getItem('token')
                   if (token) fetchDashboardData(token)
                 }}
-                className="text-gray-600 hover:text-gray-900 px-3 py-1 rounded border hover:bg-gray-50"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded border hover:bg-gray-50 text-sm sm:text-base"
               >
                 Refresh
               </button>
               <Link 
                 href="/tasks/new"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm sm:text-base"
               >
                 Add Task
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 text-sm sm:text-base"
               >
                 Logout
               </button>
@@ -240,8 +240,8 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Today's Tasks */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow p-6">
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                   <p className="text-gray-500 mb-4">No tasks scheduled for today</p>
                   <Link 
                     href="/tasks/new"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-sm sm:text-base font-medium"
                   >
                     Create Your First Task
                   </Link>
@@ -260,9 +260,9 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   {tasks.map((task) => (
                     <div key={task.id} className={`border rounded-lg p-4 ${task.is_completed ? 'bg-green-50 border-green-200' : ''}`}>
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
+                      <div className="flex flex-col sm:flex-row justify-between items-start space-y-3 sm:space-y-0">
+                        <div className="flex-1 w-full">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                             <h3 className={`font-medium ${task.is_completed ? 'line-through text-gray-500' : ''}`}>
                               {task.title}
                             </h3>
@@ -275,46 +275,47 @@ export default function DashboardPage() {
                               {task.description}
                             </p>
                           )}
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
                             <span>{formatTimeDisplay(task.start_time)}</span>
-                            <span>→</span>
+                            <span className="hidden sm:inline">→</span>
                             <span>{formatTimeDisplay(calculateEndTime(task.start_time, task.duration_minutes))}</span>
                             <span>({formatDuration(task.duration_minutes)})</span>
                             <span className="capitalize">{task.category}</span>
                           </div>
-
                         </div>
-                                                 <div className="flex items-center space-x-2">
-                           <span className={`px-2 py-1 rounded text-xs font-medium ${
-                             task.priority === 'high' ? 'bg-red-100 text-red-800' :
-                             task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                             'bg-green-100 text-green-800'
-                           }`}>
-                             {task.priority}
-                           </span>
-                           <Link
-                             href={`/tasks/edit/${task.id}`}
-                             className="px-3 py-1 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                           >
-                             Edit
-                           </Link>
-                           <button
-                             onClick={() => handleCompleteTask(task.id, task.is_completed)}
-                             className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                               task.is_completed
-                                 ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                 : 'bg-green-600 text-white hover:bg-green-700'
-                             }`}
-                           >
-                             {task.is_completed ? 'Undo' : 'Complete'}
-                           </button>
-                           <button
-                             onClick={() => handleDeleteTask(task.id)}
-                             className="px-3 py-1 rounded text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
-                           >
-                             Delete
-                           </button>
-                         </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                          <span className={`px-2 py-1 rounded text-xs font-medium self-start ${
+                            task.priority === 'high' ? 'bg-red-100 text-red-800' :
+                            task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                            {task.priority}
+                          </span>
+                          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <Link
+                              href={`/tasks/edit/${task.id}`}
+                              className="flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              onClick={() => handleCompleteTask(task.id, task.is_completed)}
+                              className={`flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium transition-colors ${
+                                task.is_completed
+                                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  : 'bg-green-600 text-white hover:bg-green-700'
+                              }`}
+                            >
+                              {task.is_completed ? 'Undo' : 'Complete'}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTask(task.id)}
+                              className="flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}

@@ -328,11 +328,11 @@ export default function EditTaskPage() {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Time Setup *
               </label>
-              <div className="flex space-x-4 mb-4">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
                 <button
                   type="button"
                   onClick={() => handleTimeInputMethodChange('start_duration')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-3 rounded-md text-sm font-medium transition-colors ${
                     timeInputMethod === 'start_duration'
                       ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
                       : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:bg-gray-200'
@@ -343,7 +343,7 @@ export default function EditTaskPage() {
                 <button
                   type="button"
                   onClick={() => handleTimeInputMethodChange('start_end')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-3 rounded-md text-sm font-medium transition-colors ${
                     timeInputMethod === 'start_end'
                       ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
                       : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:bg-gray-200'
@@ -516,17 +516,17 @@ export default function EditTaskPage() {
             )}
 
             {/* Submit Buttons */}
-            <div className="flex justify-end space-x-4 pt-6">
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-6">
               <Link
                 href="/dashboard"
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base font-medium text-center"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm sm:text-base font-medium"
               >
                 {loading ? 'Updating...' : 'Update Task'}
               </button>
