@@ -259,7 +259,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-2 sm:space-y-3">
                   {tasks.map((task) => (
-                    <div key={task.id} className={`border rounded-lg p-3 sm:p-4 ${task.is_completed ? 'bg-green-50 border-green-200' : ''}`}>
+                    <div key={task.id} className={`border rounded-lg p-2 sm:p-4 ${task.is_completed ? 'bg-green-50 border-green-200' : ''}`}>
                       <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
                         <div className="flex-1 w-full">
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
@@ -271,37 +271,37 @@ export default function DashboardPage() {
                             )}
                           </div>
                           {task.description && (
-                            <p className={`text-xs sm:text-sm mt-1 ${task.is_completed ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-xs sm:text-sm mt-0.5 ${task.is_completed ? 'text-gray-400' : 'text-gray-600'}`}>
                               {task.description}
                             </p>
                           )}
-                          <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
+                          <div className="flex flex-wrap items-center gap-1 mt-1 text-xs sm:text-sm text-gray-500">
                             <span>{formatTimeDisplay(task.start_time)}</span>
                             <span className="hidden sm:inline">→</span>
                             <span className="sm:hidden">-</span>
                             <span>{formatTimeDisplay(calculateEndTime(task.start_time, task.duration_minutes))}</span>
-                            <span className="text-xs">({formatDuration(task.duration_minutes)})</span>
-                            <span className="capitalize text-xs">{task.category}</span>
+                            <span className="text-xs opacity-75">({formatDuration(task.duration_minutes)})</span>
+                            <span className="capitalize text-xs opacity-75">{task.category}</span>
                           </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                          <span className={`px-2 py-1 rounded text-xs font-medium self-start ${
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium self-start ${
                             task.priority === 'high' ? 'bg-red-100 text-red-800' :
                             task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-green-100 text-green-800'
                           }`}>
                             {task.priority}
                           </span>
-                          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                          <div className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto">
                             <Link
                               href={`/tasks/edit/${task.id}`}
-                              className="flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
+                              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
                             >
                               Edit
                             </Link>
                             <button
                               onClick={() => handleCompleteTask(task.id, task.is_completed)}
-                              className={`flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium transition-colors text-center ${
+                              className={`flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium transition-colors text-center ${
                                 task.is_completed
                                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                   : 'bg-green-600 text-white hover:bg-green-700'
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                             </button>
                             <button
                               onClick={() => handleDeleteTask(task.id)}
-                              className="flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors text-center"
+                              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors text-center"
                             >
                               Delete
                             </button>

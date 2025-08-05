@@ -116,4 +116,14 @@ textarea {
     border-color: #1d4ed8 !important;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
   }
+  
+  /* Mobile dashboard improvements */
+  .space-y-2 > * + * {
+    margin-top: 0.25rem !important;
+  }
+  
+  /* Compact mobile buttons */
+  button, a {
+    min-height: 32px !important;
+  }
 } 
