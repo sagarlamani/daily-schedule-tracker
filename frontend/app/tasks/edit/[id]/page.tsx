@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { useMobileFocus } from '../../hooks/useMobileFocus'
+import { useMobileFocus } from '../../../hooks/useMobileFocus'
 
 interface Category {
   id: number
