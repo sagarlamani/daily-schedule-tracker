@@ -211,8 +211,8 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 space-y-4 sm:space-y-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 sm:py-6 space-y-3 sm:space-y-0">
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <button
                 onClick={() => {
@@ -240,12 +240,12 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-8">
           {/* Today's Tasks */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Today's Tasks</h2>
+                          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Today's Tasks</h2>
               {tasks.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500 mb-4">No tasks scheduled for today</p>
@@ -257,30 +257,31 @@ export default function DashboardPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {tasks.map((task) => (
-                    <div key={task.id} className={`border rounded-lg p-4 ${task.is_completed ? 'bg-green-50 border-green-200' : ''}`}>
-                      <div className="flex flex-col sm:flex-row justify-between items-start space-y-3 sm:space-y-0">
+                    <div key={task.id} className={`border rounded-lg p-3 sm:p-4 ${task.is_completed ? 'bg-green-50 border-green-200' : ''}`}>
+                      <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
                         <div className="flex-1 w-full">
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                            <h3 className={`font-medium ${task.is_completed ? 'line-through text-gray-500' : ''}`}>
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                            <h3 className={`font-medium text-sm sm:text-base ${task.is_completed ? 'line-through text-gray-500' : ''}`}>
                               {task.title}
                             </h3>
                             {task.is_completed && (
-                              <span className="text-green-600 text-sm">✓ Completed</span>
+                              <span className="text-green-600 text-xs sm:text-sm">✓ Completed</span>
                             )}
                           </div>
                           {task.description && (
-                            <p className={`text-sm mt-1 ${task.is_completed ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-xs sm:text-sm mt-1 ${task.is_completed ? 'text-gray-400' : 'text-gray-600'}`}>
                               {task.description}
                             </p>
                           )}
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
+                          <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
                             <span>{formatTimeDisplay(task.start_time)}</span>
                             <span className="hidden sm:inline">→</span>
+                            <span className="sm:hidden">-</span>
                             <span>{formatTimeDisplay(calculateEndTime(task.start_time, task.duration_minutes))}</span>
-                            <span>({formatDuration(task.duration_minutes)})</span>
-                            <span className="capitalize">{task.category}</span>
+                            <span className="text-xs">({formatDuration(task.duration_minutes)})</span>
+                            <span className="capitalize text-xs">{task.category}</span>
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
@@ -294,13 +295,13 @@ export default function DashboardPage() {
                           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                             <Link
                               href={`/tasks/edit/${task.id}`}
-                              className="flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
+                              className="flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
                             >
                               Edit
                             </Link>
                             <button
                               onClick={() => handleCompleteTask(task.id, task.is_completed)}
-                              className={`flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium transition-colors ${
+                              className={`flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium transition-colors text-center ${
                                 task.is_completed
                                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                   : 'bg-green-600 text-white hover:bg-green-700'
@@ -310,7 +311,7 @@ export default function DashboardPage() {
                             </button>
                             <button
                               onClick={() => handleDeleteTask(task.id)}
-                              className="flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                              className="flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors text-center"
                             >
                               Delete
                             </button>
@@ -326,8 +327,8 @@ export default function DashboardPage() {
 
           {/* Streaks */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Your Streaks</h2>
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Your Streaks</h2>
               {streaks.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No streaks yet</p>
