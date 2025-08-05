@@ -72,4 +72,48 @@ body {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
+}
+
+/* Fix text color issues in form inputs */
+input, textarea, select {
+  color: #1f2937 !important; /* Dark gray text */
+  background-color: #ffffff !important; /* White background */
+  border: 1px solid #d1d5db !important; /* Ensure border is visible */
+}
+
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important; /* Light gray placeholder */
+}
+
+/* Ensure text is visible in all states */
+input:focus, textarea:focus, select:focus {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Fix for iOS Safari */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"], 
+input[type="time"],
+textarea {
+  -webkit-text-fill-color: #1f2937 !important;
+  color: #1f2937 !important;
+}
+
+/* Additional mobile textarea fixes */
+@media (max-width: 768px) {
+  textarea {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #3b82f6 !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+  
+  textarea:focus {
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+  }
 } 

@@ -203,16 +203,16 @@ export default function NewTaskPage() {
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                 Task Title *
               </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter task title"
-                value={formData.title}
-                onChange={handleChange}
-              />
+                             <input
+                 type="text"
+                 id="title"
+                 name="title"
+                 required
+                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+                 placeholder="Enter task title"
+                 value={formData.title}
+                 onChange={handleChange}
+               />
             </div>
 
             {/* Description */}
@@ -224,7 +224,7 @@ export default function NewTaskPage() {
                 id="description"
                 name="description"
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
                 placeholder="Enter task description (optional)"
                 value={formData.description}
                 onChange={handleChange}
