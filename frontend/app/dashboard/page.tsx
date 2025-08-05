@@ -37,6 +37,13 @@ export default function DashboardPage() {
     }
 
     fetchDashboardData(token)
+    
+    // Refresh data every 30 seconds to keep it updated
+    const interval = setInterval(() => {
+      fetchDashboardData(token)
+    }, 30000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const fetchDashboardData = async (token: string) => {
@@ -98,7 +105,7 @@ export default function DashboardPage() {
     }
   }
 
-  const handleDeleteTask = async (taskId: number) => {
+    const handleDeleteTask = async (taskId: number) => {
     const token = localStorage.getItem('token')
     if (!token) return
 
@@ -108,7 +115,7 @@ export default function DashboardPage() {
     }
 
     try {
-              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -128,6 +135,69 @@ export default function DashboardPage() {
     }
   }
 
+  const formatTimeDisplay = (time: string) => {
+    if (!time || time === 'NaN:undefined' || time === 'Invalid time') return 'Invalid time'
+    try {
+      const [hours, minutes] = time.split(':')
+      const hour = parseInt(hours)
+      if (isNaN(hour) || isNaN(parseInt(minutes))) return 'Invalid time'
+      const ampm = hour >= 12 ? 'PM' : 'AM'
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+      return `${displayHour}:${minutes} ${ampm}`
+    } catch (error) {
+      return 'Invalid time'
+    }
+  }
+
+  const calculateEndTime = (startTime: string, durationMinutes: number) => {
+    if (!startTime || !durationMinutes) return 'Invalid time'
+    
+    try {
+      // Handle time format like "09:00", "9:00", or "09:00:00"
+      let formattedStartTime = startTime
+      
+      // If it's already in HH:MM:SS format, use it as is
+      if (startTime.includes(':')) {
+        const parts = startTime.split(':')
+        if (parts.length === 3) {
+          // Already has seconds, use as is
+          formattedStartTime = startTime
+        } else if (parts.length === 2) {
+          // Has hours and minutes, add seconds
+          formattedStartTime = `${startTime}:00`
+        }
+      } else {
+        // Handle edge cases
+        formattedStartTime = `${startTime}:00`
+      }
+      
+      const start = new Date(`2000-01-01T${formattedStartTime}`)
+      
+      if (isNaN(start.getTime())) return 'Invalid time'
+      
+      const end = new Date(start.getTime() + durationMinutes * 60000)
+      const endTimeString = end.toTimeString().slice(0, 5)
+      
+      // Validate the calculated end time
+      if (endTimeString === 'Invalid Date' || endTimeString.includes('NaN')) {
+        return 'Invalid time'
+      }
+      
+      return endTimeString
+    } catch (error) {
+      return 'Invalid time'
+    }
+  }
+
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    if (hours > 0) {
+      return `${hours}h ${mins}m`
+    }
+    return `${mins}m`
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -144,6 +214,15 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center py-6">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={() => {
+                  const token = localStorage.getItem('token')
+                  if (token) fetchDashboardData(token)
+                }}
+                className="text-gray-600 hover:text-gray-900 px-3 py-1 rounded border hover:bg-gray-50"
+              >
+                Refresh
+              </button>
               <Link 
                 href="/tasks/new"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
@@ -197,10 +276,13 @@ export default function DashboardPage() {
                             </p>
                           )}
                           <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                            <span>{task.start_time}</span>
-                            <span>{task.duration_minutes} min</span>
+                            <span>{formatTimeDisplay(task.start_time)}</span>
+                            <span>→</span>
+                            <span>{formatTimeDisplay(calculateEndTime(task.start_time, task.duration_minutes))}</span>
+                            <span>({formatDuration(task.duration_minutes)})</span>
                             <span className="capitalize">{task.category}</span>
                           </div>
+
                         </div>
                                                  <div className="flex items-center space-x-2">
                            <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -210,6 +292,12 @@ export default function DashboardPage() {
                            }`}>
                              {task.priority}
                            </span>
+                           <Link
+                             href={`/tasks/edit/${task.id}`}
+                             className="px-3 py-1 rounded text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                           >
+                             Edit
+                           </Link>
                            <button
                              onClick={() => handleCompleteTask(task.id, task.is_completed)}
                              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${

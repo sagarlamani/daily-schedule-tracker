@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
+import Link from 'next/link'
 
 interface Category {
   id: number
@@ -9,12 +10,28 @@ interface Category {
   color: string
 }
 
+interface Task {
+  id: number
+  title: string
+  description?: string
+  category_id: number
+  start_time: string
+  duration_minutes: number
+  priority: string
+  is_recurring: boolean
+  recurrence_pattern?: string
+}
+
 type TimeInputMethod = 'start_duration' | 'start_end'
 
-export default function NewTaskPage() {
+export default function EditTaskPage() {
   const router = useRouter()
+  const params = useParams()
+  const taskId = params.id as string
+  
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [timeInputMethod, setTimeInputMethod] = useState<TimeInputMethod>('start_duration')
   const [formData, setFormData] = useState({
     title: '',
@@ -35,8 +52,61 @@ export default function NewTaskPage() {
       router.push('/auth/login')
       return
     }
-    fetchCategories(token)
-  }, [router])
+    
+    fetchTaskAndCategories(token)
+  }, [router, taskId])
+
+  const fetchTaskAndCategories = async (token: string) => {
+    try {
+      const [taskResponse, categoriesResponse] = await Promise.all([
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }),
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/categories`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+      ])
+
+      if (taskResponse.ok && categoriesResponse.ok) {
+        const taskData = await taskResponse.json()
+        const categoriesData = await categoriesResponse.json()
+        
+        const task = taskData.task
+        const hours = Math.floor(task.duration_minutes / 60)
+        const minutes = task.duration_minutes % 60
+        
+        setFormData({
+          title: task.title,
+          description: task.description || '',
+          category_id: task.category_id,
+          start_time: task.start_time,
+          end_time: calculateEndTime(task.start_time, task.duration_minutes),
+          duration_hours: hours,
+          duration_minutes: minutes,
+          priority: task.priority,
+          is_recurring: task.is_recurring,
+          recurrence_pattern: task.recurrence_pattern || 'daily'
+        })
+        
+        setCategories(categoriesData.categories || [])
+      } else {
+        alert('Failed to fetch task data')
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error('Error fetching task data:', error)
+      alert('Failed to fetch task data')
+      router.push('/dashboard')
+    } finally {
+      setFetching(false)
+    }
+  }
 
   // Calculate end time when start time or duration changes
   useEffect(() => {
@@ -84,20 +154,15 @@ export default function NewTaskPage() {
     }
   }, [formData.start_time, formData.end_time, timeInputMethod])
 
-  const fetchCategories = async (token: string) => {
+  const calculateEndTime = (startTime: string, durationMinutes: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/categories`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories || [])
-      }
+      if (!startTime || !durationMinutes) return '09:30'
+      const start = new Date(`2000-01-01T${startTime}:00`)
+      if (isNaN(start.getTime())) return '09:30'
+      const end = new Date(start.getTime() + durationMinutes * 60000)
+      return end.toTimeString().slice(0, 5)
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      return '09:30'
     }
   }
 
@@ -126,8 +191,8 @@ export default function NewTaskPage() {
     const totalDurationMinutes = formData.duration_hours * 60 + formData.duration_minutes
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -139,15 +204,15 @@ export default function NewTaskPage() {
       })
 
       if (response.ok) {
-        alert('Task created successfully!')
+        alert('Task updated successfully!')
         router.push('/dashboard')
       } else {
         const error = await response.json()
-        alert(`Failed to create task: ${error.detail}`)
+        alert(`Failed to update task: ${error.detail}`)
       }
     } catch (error) {
-      console.error('Error creating task:', error)
-      alert('Failed to create task. Please try again.')
+      console.error('Error updating task:', error)
+      alert('Failed to update task. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -164,21 +229,34 @@ export default function NewTaskPage() {
   const handleTimeInputMethodChange = (method: TimeInputMethod) => {
     setTimeInputMethod(method)
     if (method === 'start_duration') {
-      // Reset to default duration when switching
+      // Reset to current duration when switching
+      const totalMinutes = formData.duration_hours * 60 + formData.duration_minutes
+      const hours = Math.floor(totalMinutes / 60)
+      const minutes = totalMinutes % 60
       setFormData(prev => ({ 
         ...prev, 
-        duration_hours: 0,
-        duration_minutes: 30
+        duration_hours: hours,
+        duration_minutes: minutes
       }))
     }
   }
 
   const formatTimeDisplay = (time: string) => {
+    if (!time || time === 'NaN:undefined') return 'Invalid time'
     const [hours, minutes] = time.split(':')
     const hour = parseInt(hours)
+    if (isNaN(hour)) return 'Invalid time'
     const ampm = hour >= 12 ? 'PM' : 'AM'
     const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
     return `${displayHour}:${minutes} ${ampm}`
+  }
+
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -186,8 +264,8 @@ export default function NewTaskPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Create New Task</h1>
-            <p className="text-gray-600 mt-2">Add a new task to your schedule</p>
+            <h1 className="text-2xl font-bold text-gray-900">Edit Task</h1>
+            <p className="text-gray-600 mt-2">Update your task details</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -439,19 +517,18 @@ export default function NewTaskPage() {
 
             {/* Submit Buttons */}
             <div className="flex justify-end space-x-4 pt-6">
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard')}
+              <Link
+                href="/dashboard"
                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Cancel
-              </button>
+              </Link>
               <button
                 type="submit"
                 disabled={loading}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               >
-                {loading ? 'Creating...' : 'Create Task'}
+                {loading ? 'Updating...' : 'Update Task'}
               </button>
             </div>
           </form>
