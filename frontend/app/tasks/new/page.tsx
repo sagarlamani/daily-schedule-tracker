@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useMobileFocus } from '../../hooks/useMobileFocus'
 
 interface Category {
   id: number
@@ -16,6 +17,7 @@ export default function NewTaskPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [timeInputMethod, setTimeInputMethod] = useState<TimeInputMethod>('start_duration')
+  const descriptionRef = useMobileFocus()
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -181,16 +183,16 @@ export default function NewTaskPage() {
     return `${displayHour}:${minutes} ${ampm}`
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Create New Task</h1>
-            <p className="text-gray-600 mt-2">Add a new task to your schedule</p>
-          </div>
+     return (
+     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+           <div className="mb-4 sm:mb-6">
+             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Create New Task</h1>
+             <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Add a new task to your schedule</p>
+           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+                     <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Task Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -214,6 +216,7 @@ export default function NewTaskPage() {
                 Description
               </label>
               <textarea
+                ref={descriptionRef}
                 id="description"
                 name="description"
                 rows={3}

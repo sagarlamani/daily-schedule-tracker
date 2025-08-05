@@ -30,4 +30,25 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Mobile input focus improvements */
+@media (max-width: 768px) {
+  input:focus,
+  textarea:focus,
+  select:focus {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Ensure form elements are visible when keyboard appears */
+  form {
+    padding-bottom: 20px;
+  }
+  
+  /* Better touch targets */
+  button, 
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+  }
 } 
