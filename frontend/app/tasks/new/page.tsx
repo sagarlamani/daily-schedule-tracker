@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useMobileFocus } from '../../hooks/useMobileFocus'
+import { useTextAreaFocus } from '../../hooks/useMobileFocus'
 
 interface Category {
   id: number
@@ -17,7 +17,7 @@ export default function NewTaskPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [timeInputMethod, setTimeInputMethod] = useState<TimeInputMethod>('start_duration')
-  const descriptionRef = useMobileFocus()
+  const descriptionRef = useTextAreaFocus()
   const [formData, setFormData] = useState({
     title: '',
     description: '',

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { useMobileFocus } from '../../../hooks/useMobileFocus'
+import { useTextAreaFocus } from '../../../hooks/useMobileFocus'
 
 interface Category {
   id: number
@@ -34,7 +34,7 @@ export default function EditTaskPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [timeInputMethod, setTimeInputMethod] = useState<TimeInputMethod>('start_duration')
-  const descriptionRef = useMobileFocus()
+  const descriptionRef = useTextAreaFocus()
   const [formData, setFormData] = useState({
     title: '',
     description: '',
