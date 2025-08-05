@@ -42,7 +42,7 @@ body {
   
   /* Ensure form elements are visible when keyboard appears */
   form {
-    padding-bottom: 20px;
+    padding-bottom: 100px; /* More space for keyboard */
   }
   
   /* Better touch targets */
@@ -50,5 +50,26 @@ body {
   input[type="submit"],
   input[type="button"] {
     min-height: 44px;
+  }
+  
+  /* Improve textarea visibility on mobile */
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  
+  /* Ensure inputs are properly visible */
+  input, textarea, select {
+    -webkit-appearance: none;
+    border-radius: 8px;
+  }
+  
+  /* Better focus states */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 } 

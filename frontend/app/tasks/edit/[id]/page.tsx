@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { useTextAreaFocus } from '../../../hooks/useMobileFocus'
+
 
 interface Category {
   id: number
@@ -34,7 +34,7 @@ export default function EditTaskPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [timeInputMethod, setTimeInputMethod] = useState<TimeInputMethod>('start_duration')
-  const descriptionRef = useTextAreaFocus()
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -56,6 +56,11 @@ export default function EditTaskPage() {
     }
     
     fetchTaskAndCategories(token)
+    
+    // Scroll to top on mobile for better visibility
+    if (window.innerWidth <= 768) {
+      window.scrollTo(0, 0)
+    }
   }, [router, taskId])
 
   const fetchTaskAndCategories = async (token: string) => {
@@ -261,10 +266,10 @@ export default function EditTaskPage() {
     )
   }
 
-     return (
-     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
-       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+           return (
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-8 pb-20 sm:pb-8">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                      <div className="mb-4 sm:mb-6">
              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Edit Task</h1>
              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Update your task details</p>
@@ -294,7 +299,6 @@ export default function EditTaskPage() {
                 Description
               </label>
               <textarea
-                ref={descriptionRef}
                 id="description"
                 name="description"
                 rows={3}
