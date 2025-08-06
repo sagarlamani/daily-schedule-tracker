@@ -197,6 +197,43 @@ export default function EditTaskPage() {
     // Calculate total duration in minutes for backend
     const totalDurationMinutes = formData.duration_hours * 60 + formData.duration_minutes
 
+    // Check for time conflicts first (excluding current task)
+    try {
+      const conflictResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/check-conflicts`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          start_time: formData.start_time,
+          duration_minutes: totalDurationMinutes,
+          exclude_task_id: parseInt(taskId)
+        }),
+      })
+
+      if (conflictResponse.ok) {
+        const conflictData = await conflictResponse.json()
+        if (conflictData.has_conflicts) {
+          const conflictList = conflictData.conflicts.map((conflict: any) => 
+            `• ${conflict.title} (${formatTimeDisplay(conflict.start_time)} - ${formatTimeDisplay(calculateEndTime(conflict.start_time, conflict.duration_minutes))})`
+          ).join('\n')
+          
+          const proceed = confirm(
+            `⚠️ Time Conflict Detected!\n\nThis task conflicts with ${conflictData.conflict_count} existing task(s):\n\n${conflictList}\n\nDo you want to proceed anyway?`
+          )
+          
+          if (!proceed) {
+            setLoading(false)
+            return
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking conflicts:', error)
+      // Continue with task update even if conflict check fails
+    }
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/${taskId}`, {
         method: 'PUT',

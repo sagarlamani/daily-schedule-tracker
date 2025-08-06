@@ -132,6 +132,42 @@ export default function NewTaskPage() {
     // Calculate total duration in minutes for backend
     const totalDurationMinutes = formData.duration_hours * 60 + formData.duration_minutes
 
+    // Check for time conflicts first
+    try {
+      const conflictResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks/check-conflicts`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          start_time: formData.start_time,
+          duration_minutes: totalDurationMinutes
+        }),
+      })
+
+      if (conflictResponse.ok) {
+        const conflictData = await conflictResponse.json()
+        if (conflictData.has_conflicts) {
+          const conflictList = conflictData.conflicts.map((conflict: any) => 
+            `• ${conflict.title} (${formatTimeDisplay(conflict.start_time)} - ${formatTimeDisplay(calculateEndTime(conflict.start_time, conflict.duration_minutes))})`
+          ).join('\n')
+          
+          const proceed = confirm(
+            `⚠️ Time Conflict Detected!\n\nThis task conflicts with ${conflictData.conflict_count} existing task(s):\n\n${conflictList}\n\nDo you want to proceed anyway?`
+          )
+          
+          if (!proceed) {
+            setLoading(false)
+            return
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking conflicts:', error)
+      // Continue with task creation even if conflict check fails
+    }
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/tasks`, {
         method: 'POST',
@@ -186,6 +222,18 @@ export default function NewTaskPage() {
     const ampm = hour >= 12 ? 'PM' : 'AM'
     const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
     return `${displayHour}:${minutes} ${ampm}`
+  }
+
+  const calculateEndTime = (startTime: string, durationMinutes: number) => {
+    try {
+      if (!startTime || !durationMinutes) return '09:30'
+      const start = new Date(`2000-01-01T${startTime}:00`)
+      if (isNaN(start.getTime())) return '09:30'
+      const end = new Date(start.getTime() + durationMinutes * 60000)
+      return end.toTimeString().slice(0, 5)
+    } catch (error) {
+      return '09:30'
+    }
   }
 
            return (

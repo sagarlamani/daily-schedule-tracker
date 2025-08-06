@@ -211,6 +211,35 @@ async def uncomplete_task(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/tasks/check-conflicts")
+async def check_time_conflicts(
+    conflict_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Check for time conflicts with existing tasks."""
+    try:
+        start_time = conflict_data.get("start_time")
+        duration_minutes = conflict_data.get("duration_minutes")
+        exclude_task_id = conflict_data.get("exclude_task_id")
+        
+        if not start_time or duration_minutes is None:
+            raise HTTPException(status_code=400, detail="start_time and duration_minutes are required")
+        
+        conflicts = task_service.check_time_conflicts(
+            current_user.id, 
+            start_time, 
+            duration_minutes, 
+            exclude_task_id
+        )
+        
+        return {
+            "has_conflicts": len(conflicts) > 0,
+            "conflicts": conflicts,
+            "conflict_count": len(conflicts)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Schedule endpoints
 @app.get("/api/schedules/{date}")
 async def get_schedule(

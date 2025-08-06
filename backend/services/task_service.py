@@ -123,4 +123,48 @@ class TaskService:
             db.commit()
             return True
         finally:
+            db.close()
+    
+    def check_time_conflicts(self, user_id: int, start_time: str, duration_minutes: int, exclude_task_id: int = None) -> List[dict]:
+        """Check for time conflicts with existing tasks."""
+        from datetime import datetime, timedelta
+        
+        db = SessionLocal()
+        try:
+            # Parse start time
+            start_datetime = datetime.strptime(start_time, "%H:%M")
+            
+            # Calculate end time
+            end_datetime = start_datetime + timedelta(minutes=duration_minutes)
+            
+            # Get all user's tasks for the same day
+            query = db.query(Task).filter(Task.user_id == user_id)
+            
+            # Exclude the current task if updating
+            if exclude_task_id:
+                query = query.filter(Task.id != exclude_task_id)
+            
+            existing_tasks = query.all()
+            conflicts = []
+            
+            for task in existing_tasks:
+                if task.is_completed:
+                    continue  # Skip completed tasks
+                
+                # Parse existing task times
+                task_start = datetime.strptime(task.start_time, "%H:%M")
+                task_end = task_start + timedelta(minutes=task.duration_minutes)
+                
+                # Check for overlap
+                if (start_datetime < task_end and end_datetime > task_start):
+                    conflicts.append({
+                        "task_id": task.id,
+                        "title": task.title,
+                        "start_time": task.start_time,
+                        "duration_minutes": task.duration_minutes,
+                        "overlap_type": "full" if (start_datetime <= task_start and end_datetime >= task_end) else "partial"
+                    })
+            
+            return conflicts
+        finally:
             db.close() 
